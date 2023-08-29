@@ -1,4 +1,4 @@
-import ftplib, os, datetime
+import ftplib, os, datetime, json
 from logger import run_and_log
 
 
@@ -35,11 +35,13 @@ class SyncApp:
         print("---------------------------------------------------------")
 
         self.server = ftplib.FTP()
-        self.server.connect('192.168.1.111', 2221)
-        self.server.login('ftp','ftp')
+        with open("server.json", "r") as f:
+            server_details = json.load(f)
+        self.server.connect(server_details["server"], server_details["port"])
+        self.server.login(server_details["username"],server_details["password"])
         self.server.cwd(sync_path_mobile)
 
-        self.mobile_dir = Dir("7th sem", sync_path_mobile)
+        self.mobile_dir = Dir(os.path.basename(sync_path_mobile), sync_path_mobile)
         self.initialize_mobile_dir(self.mobile_dir)            
         self.server.cwd(sync_path_mobile)
 
